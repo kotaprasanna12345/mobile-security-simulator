@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CyberGuard | Security Command Center</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    color:#fff;
+    min-height:100vh;
+
+    background:
+        radial-gradient(
+            circle at 15% 15%,
+            rgba(0,217,255,.13),
+            transparent 25%
+        ),
+
+        radial-gradient(
+            circle at 85% 80%,
+            rgba(66,255,158,.08),
+            transparent 28%
+        ),
+
+        #040810;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+.navbar{
+
+    height:70px;
+
+    padding:0 6%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    background:rgba(4,8,16,.92);
+
+    border-bottom:
+        1px solid rgba(255,255,255,.08);
+
+    position:sticky;
+
+    top:0;
+
+    z-index:100;
+
+    backdrop-filter:blur(16px);
+}
+
+.logo{
+
+    font-size:22px;
+
+    font-weight:800;
+
+    letter-spacing:1px;
+}
+
+.logo span{
+
+    color:#00d9ff;
+}
+
+.status{
+
+    color:#42ff9e;
+
+    font-size:12px;
+
+    letter-spacing:1px;
+}
+
+.status::before{
+
+    content:"";
+
+    display:inline-block;
+
+    width:8px;
+
+    height:8px;
+
+    border-radius:50%;
+
+    background:#42ff9e;
+
+    margin-right:7px;
+
+    box-shadow:
+        0 0 14px #42ff9e;
+}
+
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+
+.container{
+
+    width:90%;
+
+    max-width:1450px;
+
+    margin:auto;
+
+    padding:42px 0 70px;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.label{
+
+    color:#00d9ff;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    letter-spacing:3px;
+
+    margin-bottom:10px;
+}
+
+h1{
+
+    font-size:
+        clamp(34px,5vw,58px);
+
+    margin-bottom:12px;
+}
+
+.subtitle{
+
+    color:#8f9bad;
+
+    max-width:720px;
+
+    line-height:1.7;
+}
+
+
+/* =====================================================
+   ACTION BUTTONS
+===================================================== */
+
+.actions{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:22px;
+
+    flex-wrap:wrap;
+}
+
+button{
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:12px 18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    font-family:inherit;
+}
+
+button:hover{
+
+    transform:translateY(-2px);
+}
+
+button:active{
+
+    transform:translateY(0);
+}
+
+.primary{
+
+    background:#00d9ff;
+
+    color:#031018;
+}
+
+.secondary{
+
+    background:
+        rgba(255,255,255,.07);
+
+    color:#fff;
+
+    border:
+        1px solid rgba(255,255,255,.1);
+}
+
+.secondary:hover{
+
+    border-color:#00d9ff;
+
+    background:
+        rgba(0,217,255,.08);
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+.error{
+
+    display:none;
+
+    margin-top:20px;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    background:
+        rgba(255,70,70,.08);
+
+    border:
+        1px solid rgba(255,70,70,.2);
+
+    color:#ff8585;
+}
+
+
+/* =====================================================
+   SCORE + MONITOR
+===================================================== */
+
+.command-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1.7fr;
+
+    gap:20px;
+
+    margin-top:35px;
+}
+
+.card{
+
+    background:
+        rgba(12,19,33,.84);
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.22);
+}
+
+
+/* =====================================================
+   SCORE
+===================================================== */
+
+.score-card{
+
+    min-height:430px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+.score-title{
+
+    color:#8f9bad;
+
+    font-size:13px;
+
+    text-transform:uppercase;
+
+    letter-spacing:2px;
+
+    margin-bottom:25px;
+}
+
+.ring{
+
+    width:240px;
+
+    height:240px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    position:relative;
+
+    background:
+        conic-gradient(
+            #00d9ff 0deg,
+            #42ff9e 0deg,
+            rgba(255,255,255,.07) 0deg
+        );
+
+    box-shadow:
+        0 0 35px rgba(0,217,255,.08);
+}
+
+.ring::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:190px;
+
+    height:190px;
+
+    border-radius:50%;
+
+    background:#0a111e;
+}
+
+.score-content{
+
+    position:relative;
+
+    text-align:center;
+}
+
+.score{
+
+    font-size:43px;
+
+    font-weight:800;
+}
+
+.accuracy{
+
+    color:#7e899b;
+
+    font-size:11px;
+
+    letter-spacing:2px;
+
+    margin-top:5px;
+}
+
+.rank{
+
+    margin-top:25px;
+
+    color:#42ff9e;
+
+    font-size:19px;
+
+    font-weight:bold;
+}
+
+
+/* =====================================================
+   THREAT MONITOR
+===================================================== */
+
+.monitor{
+
+    min-height:430px;
+}
+
+.card-title{
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    margin-bottom:22px;
+}
+
+.threat-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:22px;
+}
+
+.threat-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:9px;
+
+    font-size:14px;
+}
+
+.threat-header span:last-child{
+
+    color:#00d9ff;
+
+    font-weight:bold;
+}
+
+.track{
+
+    height:11px;
+
+    border-radius:20px;
+
+    background:
+        rgba(255,255,255,.07);
+
+    overflow:hidden;
+}
+
+.fill{
+
+    height:100%;
+
+    width:0;
+
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #00d9ff,
+            #42ff9e
+        );
+
+    transition:
+        width 1s ease;
+}
+
+.monitor-footer{
+
+    margin-top:35px;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    background:
+        rgba(66,255,158,.05);
+
+    border:
+        1px solid rgba(66,255,158,.12);
+
+    color:#9ca8bb;
+
+    font-size:13px;
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:18px;
+
+    margin-top:20px;
+}
+
+.stat-value{
+
+    font-size:32px;
+
+    font-weight:800;
+
+    margin-top:9px;
+}
+
+.stat-label{
+
+    color:#7f8a9d;
+
+    font-size:11px;
+
+    text-transform:uppercase;
+
+    letter-spacing:1.2px;
+}
+
+.stat-sub{
+
+    color:#42ff9e;
+
+    font-size:12px;
+
+    margin-top:7px;
+}
+
+
+/* =====================================================
+   LOWER GRID
+===================================================== */
+
+.lower-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:20px;
+
+    margin-top:20px;
+}
+
+.ai-card{
+
+    min-height:280px;
+}
+
+.ai-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:16px;
+
+    margin-bottom:12px;
+
+    border-radius:13px;
+
+    background:
+        rgba(255,255,255,.035);
+}
+
+.ai-row span:first-child{
+
+    color:#9ca8bb;
+}
+
+.ai-row strong{
+
+    color:#00d9ff;
+
+    font-size:20px;
+}
+
+
+/* =====================================================
+   ACHIEVEMENTS
+===================================================== */
+
+.achievement-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:12px;
+}
+
+.badge{
+
+    padding:17px;
+
+    border-radius:14px;
+
+    background:
+        rgba(66,255,158,.05);
+
+    border:
+        1px solid rgba(66,255,158,.15);
+
+    transition:.2s;
+}
+
+.badge:hover{
+
+    transform:translateY(-2px);
+
+    border-color:
+        rgba(66,255,158,.35);
+}
+
+.badge.locked{
+
+    background:
+        rgba(255,255,255,.025);
+
+    border-color:
+        rgba(255,255,255,.08);
+}
+
+.badge-icon{
+
+    font-size:27px;
+
+    margin-bottom:7px;
+}
+
+.badge h3{
+
+    font-size:14px;
+}
+
+.badge p{
+
+    color:#7f8a9d;
+
+    font-size:11px;
+
+    margin-top:5px;
+}
+
+.badge.unlocked p{
+
+    color:#42ff9e;
+}
+
+
+/* =====================================================
+   LIVE SECURITY FEED
+===================================================== */
+
+.live{
+
+    margin-top:20px;
+}
+
+.live-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:13px;
+
+    padding:15px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.06);
+}
+
+.live-item:last-child{
+
+    border-bottom:none;
+}
+
+.live-dot{
+
+    width:9px;
+
+    height:9px;
+
+    border-radius:50%;
+
+    background:#42ff9e;
+
+    box-shadow:
+        0 0 12px #42ff9e;
+}
+
+.live-info{
+
+    flex:1;
+}
+
+.live-info strong{
+
+    font-size:14px;
+}
+
+.live-info p{
+
+    color:#717d90;
+
+    font-size:11px;
+
+    margin-top:4px;
+}
+
+.live-status{
+
+    color:#42ff9e;
+
+    font-size:11px;
+
+    font-weight:bold;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.footer{
+
+    text-align:center;
+
+    color:#596477;
+
+    font-size:12px;
+
+    margin-top:50px;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:1000px){
+
+    .command-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .lower-grid{
+
+        grid-template-columns:1fr;
+    }
+}
+
+
+@media(max-width:600px){
+
+    .navbar{
+
+        padding:0 4%;
+    }
+
+    .status{
+
+        font-size:10px;
+    }
+
+    .container{
+
+        width:92%;
+    }
+
+    .stats{
+
+        grid-template-columns:1fr;
+    }
+
+    .achievement-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .ring{
+
+        width:205px;
+
+        height:205px;
+    }
+
+    .ring::before{
+
+        width:160px;
+
+        height:160px;
+    }
+
+    .actions{
+
+        flex-direction:column;
+    }
+
+    .actions button{
+
+        width:100%;
+    }
+
+    .threat-header{
+
+        font-size:13px;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<nav class="navbar">
+
+    <div class="logo">
+
+        🛡️ CYBER<span>GUARD</span>
+
+    </div>
+
+    <div class="status">
+
+        COMMAND CENTER ONLINE
+
+    </div>
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="container">
+
+
+    <div class="label">
+
+        CYBERSECURITY OPERATIONS
+
+    </div>
+
+
+    <h1>
+
+        Security Command Center
+
+    </h1>
+
+
+    <p class="subtitle">
+
+        A centralized security intelligence view of your
+        cybersecurity training performance, threat detection
+        ability and AI security progress.
+
+    </p>
+
+
+    <!-- ACTIONS -->
+
+    <div class="actions">
+
+        <button
+            class="primary"
+            onclick="loadCommandCenter()">
+
+            ↻ Refresh Security
+
+        </button>
+
+
+        <button
+            class="secondary"
+            onclick="goAnalytics()">
+
+            📊 Analytics
+
+        </button>
+
+
+        <button
+            class="secondary"
+            onclick="goDashboard()">
+
+            ← Dashboard
+
+        </button>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="errorBox"
+        class="error">
+
+    </div>
+
+
+    <!-- =================================================
+         SCORE + THREAT MONITOR
+    ================================================== -->
+
+    <section class="command-grid">
+
+
+        <!-- SCORE -->
+
+        <div class="card score-card">
+
+            <div class="score-title">
+
+                Live Security Score
+
+            </div>
+
+
+            <div
+                id="scoreRing"
+                class="ring">
+
+                <div class="score-content">
+
+                    <div
+                        id="score"
+                        class="score">
+
+                        0%
+
+                    </div>
+
+
+                    <div class="accuracy">
+
+                        ACCURACY
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="rank"
+                class="rank">
+
+                Loading...
+
+            </div>
+
+        </div>
+
+
+        <!-- THREAT MONITOR -->
+
+        <div class="card monitor">
+
+            <div class="card-title">
+
+                🎯 Live Threat Monitoring
+
+            </div>
+
+
+            <div
+                id="threatList"
+                class="threat-list">
+
+            </div>
+
+
+            <div class="monitor-footer">
+
+                🟢 Security monitoring active —
+                performance is calculated from your
+                completed cybersecurity simulations.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         STATS
+    ================================================== -->
+
+    <section class="stats">
+
+
+        <div class="card">
+
+            <div class="stat-label">
+
+                Total Threats
+
+            </div>
+
+
+            <div
+                id="totalAttempts"
+                class="stat-value">
+
+                —
+
+            </div>
+
+
+            <div class="stat-sub">
+
+                Simulations
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="stat-label">
+
+                Threats Identified
+
+            </div>
+
+
+            <div
+                id="correct"
+                class="stat-value">
+
+                —
+
+            </div>
+
+
+            <div class="stat-sub">
+
+                Correct
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="stat-label">
+
+                AI Training
+
+            </div>
+
+
+            <div
+                id="aiAttempts"
+                class="stat-value">
+
+                —
+
+            </div>
+
+
+            <div class="stat-sub">
+
+                AI Attempts
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="stat-label">
+
+                Security Score
+
+            </div>
+
+
+            <div
+                id="scoreStat"
+                class="stat-value">
+
+                —
+
+            </div>
+
+
+            <div class="stat-sub">
+
+                Overall Accuracy
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         AI + ACHIEVEMENTS
+    ================================================== -->
+
+    <section class="lower-grid">
+
+
+        <!-- AI -->
+
+        <div class="card ai-card">
+
+            <div class="card-title">
+
+                🤖 AI Security Training
+
+            </div>
+
+
+            <div class="ai-row">
+
+                <span>
+
+                    AI Attempts
+
+                </span>
+
+
+                <strong id="aiCount">
+
+                    0
+
+                </strong>
+
+            </div>
+
+
+            <div class="ai-row">
+
+                <span>
+
+                    AI Correct
+
+                </span>
+
+
+                <strong id="aiCorrect">
+
+                    0
+
+                </strong>
+
+            </div>
+
+
+            <div class="ai-row">
+
+                <span>
+
+                    AI Accuracy
+
+                </span>
+
+
+                <strong id="aiAccuracy">
+
+                    0%
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACHIEVEMENTS -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                🏆 Achievements
+
+            </div>
+
+
+            <div
+                id="achievementGrid"
+                class="achievement-grid">
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         LIVE SECURITY FEED
+    ================================================== -->
+
+    <section class="card live">
+
+        <div class="card-title">
+
+            📡 Security Intelligence Feed
+
+        </div>
+
+
+        <div class="live-item">
+
+            <div class="live-dot"></div>
+
+
+            <div class="live-info">
+
+                <strong>
+
+                    Security Analytics
+
+                </strong>
+
+
+                <p>
+
+                    Performance monitoring active
+
+                </p>
+
+            </div>
+
+
+            <div class="live-status">
+
+                ACTIVE
+
+            </div>
+
+        </div>
+
+
+        <div class="live-item">
+
+            <div class="live-dot"></div>
+
+
+            <div class="live-info">
+
+                <strong>
+
+                    Threat Detection Engine
+
+                </strong>
+
+
+                <p>
+
+                    Scenario analysis available
+
+                </p>
+
+            </div>
+
+
+            <div class="live-status">
+
+                ONLINE
+
+            </div>
+
+        </div>
+
+
+        <div class="live-item">
+
+            <div class="live-dot"></div>
+
+
+            <div class="live-info">
+
+                <strong>
+
+                    AI Security Engine
+
+                </strong>
+
+
+                <p>
+
+                    AI-generated scenario training enabled
+
+                </p>
+
+            </div>
+
+
+            <div class="live-status">
+
+                READY
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <div class="footer">
+
+        CYBERGUARD • Security Command Center
+
+    </div>
+
+</main>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+/* =====================================================
+   API
+===================================================== */
+
+const API_BASE =
+    "http://localhost:5000";
+
+
+/* =====================================================
+   USER ID
+===================================================== */
+
+function getUserId(){
+
+    const id =
+        localStorage.getItem(
+            "cyberguard_user_id"
+        );
+
+    return id
+        ? Number(id)
+        : 1;
+}
+
+
+/* =====================================================
+   LOAD COMMAND CENTER
+===================================================== */
+
+async function loadCommandCenter(){
+
+    const errorBox =
+        document.getElementById(
+            "errorBox"
+        );
+
+
+    errorBox.style.display =
+        "none";
+
+
+    try{
+
+        const userId =
+            getUserId();
+
+
+        const response =
+            await fetch(
+                `${API_BASE}/api/analytics/${userId}`
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                `Server error ${response.status}`
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if(!data.success){
+
+            throw new Error(
+                data.error ||
+                "Analytics unavailable"
+            );
+        }
+
+
+        /* Render all sections */
+
+        renderScore(
+            data.overall
+        );
+
+
+        renderStats(
+            data.overall
+        );
+
+
+        renderThreats(
+            data.attack_types || []
+        );
+
+
+        renderAI(
+            data.ai_attack_types || []
+        );
+
+
+        renderAchievements(
+            data.overall || {},
+            data.attack_types || []
+        );
+
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Command Center Error:",
+            error
+        );
+
+
+        errorBox.textContent =
+            "⚠️ Unable to connect to CyberGuard backend. Please make sure Flask server is running.";
+
+
+        errorBox.style.display =
+            "block";
+    }
+}
+
+
+/* =====================================================
+   SCORE
+===================================================== */
+
+function renderScore(data){
+
+    const accuracy =
+        Number(
+            data.accuracy || 0
+        );
+
+
+    const safeAccuracy =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                accuracy
+            )
+        );
+
+
+    const degrees =
+        safeAccuracy * 3.6;
+
+
+    document
+        .getElementById(
+            "scoreRing"
+        )
+        .style.background =
+        `conic-gradient(
+            #00d9ff 0deg,
+            #42ff9e ${degrees}deg,
+            rgba(255,255,255,.07) ${degrees}deg
+        )`;
+
+
+    document
+        .getElementById(
+            "score"
+        )
+        .textContent =
+        `${accuracy.toFixed(2)}%`;
+
+
+    document
+        .getElementById(
+            "rank"
+        )
+        .textContent =
+        data.level ||
+        "Security Beginner";
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+function renderStats(data){
+
+    document
+        .getElementById(
+            "totalAttempts"
+        )
+        .textContent =
+        Number(
+            data.total_attempts || 0
+        );
+
+
+    document
+        .getElementById(
+            "correct"
+        )
+        .textContent =
+        Number(
+            data.correct_answers || 0
+        );
+
+
+    document
+        .getElementById(
+            "scoreStat"
+        )
+        .textContent =
+        `${Number(data.accuracy || 0).toFixed(2)}%`;
+}
+
+
+/* =====================================================
+   THREAT MONITOR
+===================================================== */
+
+function renderThreats(data){
+
+    const container =
+        document.getElementById(
+            "threatList"
+        );
+
+
+    if(!data || !data.length){
+
+        container.innerHTML = `
+
+            <div class="monitor-footer">
+
+                No threat data available yet.
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        data.map(
+            item => {
+
+                const accuracy =
+                    Number(
+                        item.accuracy || 0
+                    );
+
+
+                const safeAccuracy =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            accuracy
+                        )
+                    );
+
+
+                return `
+
+                    <div>
+
+                        <div class="threat-header">
+
+                            <span>
+
+                                ${escapeHTML(
+                                    item.attack_type ||
+                                    "Unknown Threat"
+                                )}
+
+                            </span>
+
+
+                            <span>
+
+                                ${accuracy.toFixed(2)}%
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="track">
+
+                            <div
+                                class="fill"
+                                style="width:${safeAccuracy}%">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
+}
+
+
+/* =====================================================
+   AI
+===================================================== */
+
+function renderAI(data){
+
+    let attempts = 0;
+
+    let correct = 0;
+
+
+    if(
+        Array.isArray(data)
+    ){
+
+        data.forEach(
+            item => {
+
+                attempts +=
+                    Number(
+                        item.attempts || 0
+                    );
+
+
+                correct +=
+                    Number(
+                        item.correct_answers || 0
+                    );
+
+            }
+        );
+
+    }
+
+
+    const accuracy =
+        attempts
+            ? (correct / attempts) * 100
+            : 0;
+
+
+    document
+        .getElementById(
+            "aiAttempts"
+        )
+        .textContent =
+        attempts;
+
+
+    document
+        .getElementById(
+            "aiCount"
+        )
+        .textContent =
+        attempts;
+
+
+    document
+        .getElementById(
+            "aiCorrect"
+        )
+        .textContent =
+        correct;
+
+
+    document
+        .getElementById(
+            "aiAccuracy"
+        )
+        .textContent =
+        `${accuracy.toFixed(2)}%`;
+}
+
+
+/* =====================================================
+   ACHIEVEMENTS
+===================================================== */
+
+function renderAchievements(
+    overall,
+    attacks
+){
+
+    const total =
+        Number(
+            overall.total_attempts || 0
+        );
+
+
+    const correct =
+        Number(
+            overall.correct_answers || 0
+        );
+
+
+    const accuracy =
+        Number(
+            overall.accuracy || 0
+        );
+
+
+    const fakeApp =
+        Array.isArray(attacks)
+            ? attacks.find(
+                item =>
+                    item.attack_type ===
+                    "Fake App"
+            )
+            : null;
+
+
+    const fakeAppAccuracy =
+        fakeApp
+            ? Number(
+                fakeApp.accuracy || 0
+            )
+            : 0;
+
+
+    const achievements = [
+
+        {
+            icon:"🛡️",
+
+            title:"First Defender",
+
+            text:
+                "First security simulation completed.",
+
+            unlocked:
+                total >= 1
+        },
+
+
+        {
+            icon:"🎯",
+
+            title:"Threat Hunter",
+
+            text:
+                "10 or more threats successfully identified.",
+
+            unlocked:
+                correct >= 10
+        },
+
+
+        {
+            icon:"🔥",
+
+            title:"Security Expert",
+
+            text:
+                "Overall accuracy reached 90% or higher.",
+
+            unlocked:
+                accuracy >= 90
+        },
+
+
+        {
+            icon:"📱",
+
+            title:"Fake App Hunter",
+
+            text:
+                "100% accuracy against Fake Apps.",
+
+            unlocked:
+                fakeAppAccuracy >= 100
+        }
+
+    ];
+
+
+    document
+        .getElementById(
+            "achievementGrid"
+        )
+        .innerHTML =
+
+        achievements.map(
+            item => `
+
+                <div
+                    class="badge ${
+                        item.unlocked
+                            ? "unlocked"
+                            : "locked"
+                    }">
+
+                    <div class="badge-icon">
+
+                        ${item.icon}
+
+                    </div>
+
+
+                    <h3>
+
+                        ${item.title}
+
+                    </h3>
+
+
+                    <p>
+
+                        ${
+                            item.unlocked
+                                ? "✓ UNLOCKED"
+                                : "🔒 LOCKED"
+                        }
+
+                    </p>
+
+                </div>
+
+            `
+        ).join("");
+}
+
+
+/* =====================================================
+   HTML ESCAPE
+===================================================== */
+
+function escapeHTML(value){
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        String(value);
+
+
+    return div.innerHTML;
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function goAnalytics(){
+
+    window.location.href =
+        "/frontend/analytics.html";
+}
+
+
+function goDashboard(){
+
+    window.location.href =
+        "/frontend/dashboard.html";
+}
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadCommandCenter();
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>
