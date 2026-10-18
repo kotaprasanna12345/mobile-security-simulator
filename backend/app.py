@@ -1,72 +1,78 @@
 
 import os
 import json
-from pathlib import Path
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import (
+    Flask,
+    render_template,
+    send_from_directory,
+    jsonify,
+    request
+)
 
 from database import get_connection
 from ai_engine import generate_scenario
 
 
 # ==========================================
-# CYBERGUARD - MOBILE SECURITY SIMULATOR
+# CYBERGUARD BACKEND CONFIGURATION
 # ==========================================
 
-BASE_DIR = Path(__file__).resolve().parent
-PROJECT_DIR = BASE_DIR.parent
-FRONTEND_DIR = PROJECT_DIR / "frontend"
+frontend_dir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../frontend")
+)
 
-app = Flask(__name__)
-
-# Frontend folder location
-app.config["FRONTEND_DIR"] = str(FRONTEND_DIR)
+app = Flask(
+    __name__,
+    template_folder=frontend_dir,
+    static_folder=frontend_dir
+)
 
 
 # ==========================================
-# 1. HOME PAGE
+# 1. MAIN HOME PAGE
 # ==========================================
 
 @app.route("/")
 def home():
-    return send_from_directory(str(FRONTEND_DIR), "command-center.html")
+    return render_template("command-center.html")
 
 
 # ==========================================
-# 2. FRONTEND PAGE ROUTES
+# 2. SPECIFIC HTML PAGES
 # ==========================================
 
 @app.route("/command-center")
 def command_center():
-    return send_from_directory(str(FRONTEND_DIR), "command-center.html")
+    return render_template("command-center.html")
 
 
 @app.route("/analytics")
 def analytics():
-    return send_from_directory(str(FRONTEND_DIR), "analytics.html")
+    return render_template("analytics.html")
 
 
 @app.route("/ai-generator")
 def ai_generator():
-    return send_from_directory(str(FRONTEND_DIR), "ai-generator.html")
+    return render_template("ai-generator.html")
 
 
 @app.route("/attack-radar")
 def attack_radar():
-    return send_from_directory(str(FRONTEND_DIR), "attack-radar.html")
+    return render_template("attack-radar.html")
 
 
 # ==========================================
-# 3. STATIC FILES - CSS, JS, IMAGES
+# 3. STATIC FILES: CSS, JS, IMAGES
 # ==========================================
 
 @app.route("/<path:filename>")
 def serve_static(filename):
-    return send_from_directory(str(FRONTEND_DIR), filename)
+    return send_from_directory(frontend_dir, filename)
 
 
 # ==========================================
-# 4. BACKEND HEALTH CHECK
+# 4. BACKEND HEALTH CHECK API
 # ==========================================
 
 @app.route("/api/status")
@@ -84,12 +90,15 @@ def api_status():
 
 @app.route("/api/scenarios", methods=["GET"])
 def get_scenarios():
+    connection = None
+
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
         cursor.execute("SELECT * FROM scenarios")
         rows = cursor.fetchall()
+        columns = [column[0] for column in cursor.description]
 
         scenarios = []
 
@@ -97,10 +106,8 @@ def get_scenarios():
             if hasattr(row, "keys"):
                 scenario = dict(row)
             else:
-                columns = [column[0] for column in cursor.description]
                 scenario = dict(zip(columns, row))
 
-            # Convert JSON text fields into Python data
             for key in ("options", "correct_answer", "explanation"):
                 if key in scenario and isinstance(scenario[key], str):
                     try:
@@ -110,8 +117,6 @@ def get_scenarios():
 
             scenarios.append(scenario)
 
-        connection.close()
-
         return jsonify({
             "status": "success",
             "count": len(scenarios),
@@ -119,20 +124,27 @@ def get_scenarios():
         })
 
     except Exception as error:
-        app.logger.exception("Unable to fetch scenarios")
+        app.logger.exception("Error fetching scenarios")
+
         return jsonify({
             "status": "error",
             "message": "Unable to fetch scenarios",
             "details": str(error)
         }), 500
 
+    finally:
+        if connection is not None:
+            connection.close()
+
 
 # ==========================================
-# 6. GET ONE SCENARIO
+# 6. GET A SINGLE SCENARIO
 # ==========================================
 
 @app.route("/api/scenarios/<int:scenario_id>", methods=["GET"])
 def get_scenario(scenario_id):
+    connection = None
+
     try:
         connection = get_connection()
         cursor = connection.cursor()
@@ -143,7 +155,6 @@ def get_scenario(scenario_id):
         )
 
         row = cursor.fetchone()
-        connection.close()
 
         if row is None:
             return jsonify({
@@ -151,10 +162,11 @@ def get_scenario(scenario_id):
                 "message": "Scenario not found"
             }), 404
 
+        columns = [column[0] for column in cursor.description]
+
         if hasattr(row, "keys"):
             scenario = dict(row)
         else:
-            columns = [column[0] for column in cursor.description]
             scenario = dict(zip(columns, row))
 
         for key in ("options", "correct_answer", "explanation"):
@@ -170,12 +182,17 @@ def get_scenario(scenario_id):
         })
 
     except Exception as error:
-        app.logger.exception("Unable to fetch scenario")
+        app.logger.exception("Error fetching scenario")
+
         return jsonify({
             "status": "error",
             "message": "Unable to fetch scenario",
             "details": str(error)
         }), 500
+
+    finally:
+        if connection is not None:
+            connection.close()
 
 
 # ==========================================
@@ -187,7 +204,6 @@ def ai_scenario_generator():
     try:
         data = request.get_json(silent=True) or {}
 
-        # Pass the user's request to the existing AI engine
         scenario = generate_scenario(data)
 
         return jsonify({
@@ -196,7 +212,8 @@ def ai_scenario_generator():
         })
 
     except Exception as error:
-        app.logger.exception("Scenario generation failed")
+        app.logger.exception("AI scenario generation failed")
+
         return jsonify({
             "status": "error",
             "message": "Scenario generation failed",
@@ -217,23 +234,25 @@ def add_cors_headers(response):
     response.headers["Access-Control-Allow-Methods"] = (
         "GET, POST, OPTIONS"
     )
+
     return response
 
 
 # ==========================================
-# 9. RUN SERVER
+# 9. START SERVER
 # ==========================================
 
 if __name__ == "__main__":
     print("=" * 45)
     print("CYBERGUARD BACKEND")
     print("=" * 45)
-    print("Home:          http://127.0.0.1:5000/")
+    print("Home:           http://127.0.0.1:5000/")
     print("Command Center: http://127.0.0.1:5000/command-center")
-    print("Analytics:     http://127.0.0.1:5000/analytics")
-    print("AI Generator:  http://127.0.0.1:5000/ai-generator")
-    print("Attack Radar:  http://127.0.0.1:5000/attack-radar")
-    print("Health Check:  http://127.0.0.1:5000/api/status")
+    print("Analytics:      http://127.0.0.1:5000/analytics")
+    print("AI Generator:   http://127.0.0.1:5000/ai-generator")
+    print("Attack Radar:   http://127.0.0.1:5000/attack-radar")
+    print("API Status:     http://127.0.0.1:5000/api/status")
+    print("Scenarios API:  http://127.0.0.1:5000/api/scenarios")
     print("=" * 45)
 
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(debug=True)
